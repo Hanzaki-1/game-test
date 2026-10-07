@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Stickman: Night Shift Escape</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+body {
+    margin: 0;
+    background: #111;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    touch-action: none;
+}
+
+#game {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    background: #151922;
+}
+
+/* GAME WORLD */
+
+#world {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background:
+        linear-gradient(#202633 0 65%, #15181e 65% 100%);
+}
+
+#ceiling {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 8%;
+    background: #11151c;
+}
+
+#floor {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 35%;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            #292e38 0,
+            #292e38 70px,
+            #222731 70px,
+            #222731 72px
+        );
+    border-top: 4px solid #090b0e;
+}
+
+/* LIGHT */
+
+.light {
+    position: absolute;
+    width: 80px;
+    height: 12px;
+    background: #dfe7ef;
+    top: 13%;
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(220,240,255,.45);
+}
+
+/* ROOM OBJECTS */
+
+.door {
+    position: absolute;
+    width: 90px;
+    height: 190px;
+    bottom: 35%;
+    right: 7%;
+    background: #343b48;
+    border: 6px solid #0d1015;
+    border-radius: 5px 5px 0 0;
+}
+
+.door::after {
+    content: "";
+    position: absolute;
+    right: 12px;
+    top: 90px;
+    width: 10px;
+    height: 10px;
+    background: #e2b84a;
+    border-radius: 50%;
+}
+
+.door.locked::before {
+    content: "LOCKED";
+    position: absolute;
+    top: 65px;
+    left: 8px;
+    color: #e44;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.door.open {
+    background: #15191f;
+}
+
+.door.open::before {
+    content: "EXIT";
+    position: absolute;
+    top: 70px;
+    left: 25px;
+    color: #7cff91;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* COMPUTER */
+
+.computer {
+    position: absolute;
+    bottom: 35%;
+    left: 8%;
+    width: 130px;
+    height: 110px;
+}
+
+.monitor {
+    width: 90px;
+    height: 65px;
+    background: #080c10;
+    border: 7px solid #343b45;
+    border-radius: 5px;
+    margin-left: 15px;
+}
+
+.screen {
+    width: 100%;
+    height: 100%;
+    background: #102b25;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #59ff9b;
+    font-size: 10px;
+}
+
+.desk {
+    width: 130px;
+    height: 14px;
+    background: #4b3b30;
+}
+
+.deskLeg {
+    position: absolute;
+    width: 8px;
+    height: 45px;
+    background: #30251f;
+    top: 75px;
+}
+
+.deskLeg.left {
+    left: 15px;
+}
+
+.deskLeg.right {
+    right: 15px;
+}
+
+/* BOX */
+
+.box {
+    position: absolute;
+    bottom: 35%;
+    left: 43%;
+    width: 65px;
+    height: 60px;
+    background: #8a5b32;
+    border: 4px solid #51361f;
+}
+
+.box::after {
+    content: "";
+    position: absolute;
+    left: 27px;
+    top: 0;
+    width: 7px;
+    height: 100%;
+    background: #684321;
+}
+
+/* SECURITY CAMERA */
+
+.camera {
+    position: absolute;
+    right: 25%;
+    top: 18%;
+    width: 35px;
+    height: 25px;
+    background: #1c222c;
+    border: 4px solid #090b0f;
+    border-radius: 50%;
+}
+
+.camera::after {
+    content: "";
+    position: absolute;
+    right: -15px;
+    top: 5px;
+    border-left: 15px solid #1c222c;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+}
+
+.camera.active {
+    box-shadow: 0 0 20px #e33;
+}
+
+/* STICKMAN */
+
+#player {
+    position: absolute;
+    width: 45px;
+    height: 95px;
+    bottom: 35%;
+    left: 15%;
+    z-index: 20;
+    transition: transform .05s linear;
+}
+
+.head {
+    position: absolute;
+    width: 27px;
+    height: 27px;
+    left: 9px;
+    top: 0;
+    border: 4px solid white;
+    border-radius: 50%;
+    background: transparent;
+}
+
+.body {
+    position: absolute;
+    width: 5px;
+    height: 40px;
+    background: white;
+    left: 20px;
+    top: 25px;
+}
+
+.arm {
+    position: absolute;
+    width: 5px;
+    height: 32px;
+    background: white;
+    top: 30px;
+    transform-origin: top center;
+}
+
+.arm.left {
+    left: 20px;
+    transform: rotate(35deg);
+}
+
+.arm.right {
+    left: 20px;
+    transform: rotate(-35deg);
+}
+
+.leg {
+    position: absolute;
+    width: 5px;
+    height: 38px;
+    background: white;
+    top: 61px;
+    transform-origin: top center;
+}
+
+.leg.left {
+    left: 20px;
+    transform: rotate(25deg);
+}
+
+.leg.right {
+    left: 20px;
+    transform: rotate(-25deg);
+}
+
+/* UI */
+
+#topbar {
+    position: absolute;
+    z-index: 50;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+#mission {
+    background: rgba(0,0,0,.65);
+    padding: 9px 13px;
+    border-radius: 10px;
+}
+
+#inventory {
+    background: rgba(0,0,0,.65);
+    padding: 9px 13px;
+    border-radius: 10px;
+}
+
+/* CONTROLS */
+
+#controls {
+    position: absolute;
+    z-index: 100;
+    bottom: 15px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 18px;
+}
+
+.controlGroup {
+    display: flex;
+    gap: 12px;
+}
+
+.control {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,.5);
+    background: rgba(20,25,35,.88);
+    color: white;
+    font-size: 25px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+}
+
+.control:active {
+    transform: scale(.9);
+    background: #374052;
+}
+
+#action {
+    width: 78px;
+    height: 78px;
+    border-radius: 22px;
+    font-size: 15px;
+}
+
+/* MESSAGE */
+
+#message {
+    position: absolute;
+    z-index: 80;
+    left: 50%;
+    top: 17%;
+    transform: translateX(-50%);
+    width: min(90%, 420px);
+    background: rgba(5,7,10,.94);
+    color: white;
+    padding: 18px;
+    border: 2px solid #555;
+    border-radius: 15px;
+    text-align: center;
+    display: none;
+}
+
+#message button {
+    margin-top: 14px;
+    padding: 12px 25px;
+    border: 0;
+    border-radius: 10px;
+    background: #fff;
+    color: #111;
+    font-weight: bold;
+}
+
+/* START SCREEN */
+
+#startScreen,
+#endingScreen {
+    position: absolute;
+    inset: 0;
+    z-index: 200;
+    background: rgba(8,10,14,.96);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 25px;
+}
+
+#startScreen h1,
+#endingScreen h1 {
+    font-size: clamp(30px, 8vw, 55px);
+    margin: 5px;
+}
+
+#startScreen p,
+#endingScreen p {
+    max-width: 500px;
+    line-height: 1.5;
+    color: #bbb;
+}
+
+.mainButton {
+    margin-top: 20px;
+    padding: 16px 30px;
+    border: 0;
+    border-radius: 14px;
+    background: white;
+    color: #111;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none !important;
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+    <div id="world">
+
+        <div id="ceiling"></div>
+        <div id="floor"></div>
+
+        <div class="light" style="left:10%;"></div>
+        <div class="light" style="left:45%;"></div>
+        <div class="light" style="right:10%;"></div>
+
+        <div class="computer" id="computer">
+            <div class="monitor">
+                <div class="screen">SECURITY<br>ONLINE</div>
+            </div>
+            <div class="desk"></div>
+            <div class="deskLeg left"></div>
+            <div class="deskLeg right"></div>
+        </div>
+
+        <div class="box" id="box"></div>
+
+        <div class="camera" id="camera"></div>
+
+        <div class="door locked" id="door"></div>
+
+        <div id="player">
+            <div class="head"></div>
+            <div class="body"></div>
+            <div class="arm left"></div>
+            <div class="arm right"></div>
+            <div class="leg left"></div>
+            <div class="leg right"></div>
+        </div>
+
+    </div>
+
+    <div id="topbar">
+        <div id="mission">MISSION: Escape the facility</div>
+        <div id="inventory">🎒 Empty</div>
+    </div>
+
+    <div id="message">
+        <div id="messageText"></div>
+        <button id="messageButton">OK</button>
+    </div>
+
+    <div id="controls">
+
+        <div class="controlGroup">
+            <button class="control" id="left">◀</button>
+            <button class="control" id="right">▶</button>
+        </div>
+
+        <div class="controlGroup">
+            <button class="control" id="jump">▲</button>
+            <button class="control" id="action">ACTION</button>
+        </div>
+
+    </div>
+
+    <div id="startScreen">
+        <h1>STICKMAN</h1>
+        <h1>NIGHT SHIFT ESCAPE</h1>
+
+        <p>
+            The facility is closing for the night.
+            Unfortunately, you are still inside.
+            Find a way out before security catches you.
+        </p>
+
+        <p>
+            <b>Touch controls only.</b><br>
+            Move • Jump • Interact
+        </p>
+
+        <button class="mainButton" id="startButton">
+            START GAME
+        </button>
+    </div>
+
+    <div id="endingScreen" class="hidden">
+        <h1 id="endingTitle"></h1>
+        <p id="endingText"></p>
+        <button class="mainButton" id="restartButton">
+            PLAY AGAIN
+        </button>
+    </div>
+
+</div>
+
+<script>
+
+const player = document.getElementById("player");
+const door = document.getElementById("door");
+const box = document.getElementById("box");
+const computer = document.getElementById("computer");
+const camera = document.getElementById("camera");
+
+const mission = document.getElementById("mission");
+const inventory = document.getElementById("inventory");
+
+const message = document.getElementById("message");
+const messageText = document.getElementById("messageText");
+const messageButton = document.getElementById("messageButton");
+
+const startScreen = document.getElementById("startScreen");
+const endingScreen = document.getElementById("endingScreen");
+
+const endingTitle = document.getElementById("endingTitle");
+const endingText = document.getElementById("endingText");
+
+const startButton = document.getElementById("startButton");
+const restartButton = document.getElementById("restartButton");
+
+let gameStarted = false;
+
+let playerX = 15;
+let velocityY = 0;
+
+let jumping = false;
+
+let hasKey = false;
+let computerHacked = false;
+let cameraDisabled = false;
+
+let gameOver = false;
+
+const gravity = 0.8;
+const jumpPower = 14;
+const speed = 1.5;
+
+function updatePlayer() {
+
+    if (!gameStarted || gameOver) return;
+
+    playerX = Math.max(2, Math.min(94, playerX));
+
+    if (jumping) {
+        velocityY += gravity;
+
+        let bottom = parseFloat(player.style.bottom) || 35;
+
+        bottom -= velocityY * 0.12;
+
+        if (bottom <= 35) {
+            bottom = 35;
+            jumping = false;
+            velocityY = 0;
+        }
+
+        player.style.bottom = bottom + "%";
+    }
+
+    player.style.left = playerX + "%";
+
+    checkCamera();
+
+    requestAnimationFrame(updatePlayer);
+}
+
+/* MOVEMENT */
+
+function moveLeft() {
+    if (!gameStarted || gameOver) return;
+
+    playerX -= speed;
+}
+
+function moveRight() {
+    if (!gameStarted || gameOver) return;
+
+    playerX += speed;
+}
+
+function jump() {
+
+    if (!gameStarted || gameOver) return;
+
+    if (!jumping) {
+        jumping = true;
+        velocityY = jumpPower;
+    }
+}
+
+/* INTERACTION */
+
+function distanceTo(element) {
+
+    const rect = element.getBoundingClientRect();
+    const playerRect = player.getBoundingClientRect();
+
+    return Math.abs(
+        (playerRect.left + playerRect.width / 2) -
+        (rect.left + rect.width / 2)
+    );
+}
+
+function action() {
+
+    if (!gameStarted || gameOver) return;
+
+    const computerDistance = distanceTo(computer);
+    const boxDistance = distanceTo(box);
+    const doorDistance = distanceTo(door);
+
+    /* BOX */
+
+    if (boxDistance < 90 && !hasKey) {
+
+        hasKey = true;
+
+        inventory.textContent = "🎒 🔑 KEY";
+
+        showMessage(
+            "You opened the mysterious box.<br><br>" +
+            "Inside is a security keycard."
+        );
+
+        return;
+    }
+
+    /* COMPUTER */
+
+    if (computerDistance < 110 && !computerHacked) {
+
+        computerHacked = true;
+
+        inventory.textContent = hasKey
+            ? "🎒 🔑 KEY + 💻 ACCESS"
+            : "🎒 💻 ACCESS";
+
+        mission.textContent = "MISSION: Find the exit";
+
+        showMessage(
+            "You hacked the security computer.<br><br>" +
+            "The main exit has been unlocked... maybe."
+        );
+
+        return;
+    }
+
+    /* DOOR */
+
+    if (doorDistance < 100) {
+
+        if (!hasKey) {
+
+            showMessage(
+                "The exit requires a security key."
+            );
+
+            return;
+        }
+
+        if (!computerHacked) {
+
+            showMessage(
+                "The key works... but the security system is still active."
+            );
+
+            return;
+        }
+
+        if (!cameraDisabled) {
+
+            showEnding(
+                "🚨 CAUGHT!",
+                "You opened the door, but the security camera saw everything."
+            );
+
+            return;
+        }
+
+        showEnding(
+            "🏆 PERFECT ESCAPE!",
+            "You disabled the camera, hacked the system and escaped into the night."
+        );
+    }
+}
+
+/* CAMERA */
+
+function checkCamera() {
+
+    if (cameraDisabled) return;
+
+    const cameraRect = camera.getBoundingClientRect();
+    const playerRect = player.getBoundingClientRect();
+
+    const distance =
+        Math.abs(
+            playerRect.left -
+            cameraRect.left
+        );
+
+    if (distance < 100) {
+
+        camera.classList.add("active");
+
+        if (computerHacked && !gameOver) {
+
+            showMessage(
+                "⚠️ SECURITY ALERT<br><br>" +
+                "The camera detected you!"
+            );
+
+            computerHacked = false;
+            mission.textContent = "MISSION: Disable the camera";
+
+            cameraDisabled = true;
+
+            setTimeout(() => {
+                camera.classList.remove("active");
+            }, 800);
+        }
+
+    } else {
+
+        camera.classList.remove("active");
+    }
+}
+
+/* MESSAGE */
+
+function showMessage(text) {
+
+    messageText.innerHTML = text;
+    message.style.display = "block";
+}
+
+messageButton.addEventListener("click", () => {
+
+    message.style.display = "none";
+
+});
+
+/* ENDING */
+
+function showEnding(title, text) {
+
+    gameOver = true;
+
+    endingTitle.textContent = title;
+    endingText.textContent = text;
+
+    endingScreen.classList.remove("hidden");
+}
+
+/* START */
+
+startButton.addEventListener("click", () => {
+
+    startScreen.classList.add("hidden");
+
+    gameStarted = true;
+
+    mission.textContent =
+        "MISSION: Find a way out";
+
+    requestAnimationFrame(updatePlayer);
+});
+
+/* RESTART */
+
+restartButton.addEventListener("click", () => {
+
+    location.reload();
+
+});
+
+/* TOUCH CONTROLS */
+
+document.getElementById("left")
+.addEventListener("pointerdown", moveLeft);
+
+document.getElementById("right")
+.addEventListener("pointerdown", moveRight);
+
+document.getElementById("jump")
+.addEventListener("pointerdown", jump);
+
+document.getElementById("action")
+.addEventListener("pointerdown", action);
+
+/* HOLD MOVEMENT */
+
+let leftTimer;
+let rightTimer;
+
+const leftButton = document.getElementById("left");
+const rightButton = document.getElementById("right");
+
+leftButton.addEventListener("pointerdown", () => {
+
+    moveLeft();
+
+    clearInterval(leftTimer);
+
+    leftTimer = setInterval(() => {
+        moveLeft();
+    }, 50);
+
+});
+
+leftButton.addEventListener("pointerup", () => {
+
+    clearInterval(leftTimer);
+
+});
+
+leftButton.addEventListener("pointerleave", () => {
+
+    clearInterval(leftTimer);
+
+});
+
+rightButton.addEventListener("pointerdown", () => {
+
+    moveRight();
+
+    clearInterval(rightTimer);
+
+    rightTimer = setInterval(() => {
+        moveRight();
+    }, 50);
+
+});
+
+rightButton.addEventListener("pointerup", () => {
+
+    clearInterval(rightTimer);
+
+});
+
+rightButton.addEventListener("pointerleave", () => {
+
+    clearInterval(rightTimer);
+
+});
+
+</script>
+
+</body>
+</html>

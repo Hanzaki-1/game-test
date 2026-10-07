@@ -1,30 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Flappy Kiranaku ❤️</title>
 
 <style>
+*{box-sizing:border-box}
+
 body{
   margin:0;
-  text-align:center;
-  font-family:Arial;
   background:#70c5ce;
+  font-family:Arial;
+  text-align:center;
+  overflow:hidden;
+  touch-action:none;
+}
+
+#intro{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+
+h1{font-size:30px}
+
+button{
+  padding:16px 40px;
+  font-size:20px;
+  border:0;
+  border-radius:12px;
+  background:#ff4d6d;
+  color:white;
 }
 
 canvas{
+  width:100vw;
+  height:100vh;
   display:block;
-  margin:auto;
-  background:#70c5ce;
-}
-
-button{
-  padding:15px 30px;
-  font-size:20px;
-  border:0;
-  border-radius:10px;
-  background:#ff4d6d;
-  color:white;
-  cursor:pointer;
 }
 </style>
 </head>
@@ -34,171 +48,263 @@ button{
 <div id="intro">
   <h1>🐦 Flappy Kiranaku ❤️</h1>
   <p>Fly through 4 pipes!</p>
-  <button onclick="start()">START</button>
+  <button onclick="start()">START GAME</button>
 </div>
 
-<canvas id="game" width="400" height="600" style="display:none"></canvas>
+<canvas id="game"></canvas>
 
 <script>
-const c=document.getElementById("game");
-const ctx=c.getContext("2d");
 
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+
+let W,H;
 let bird,pipes,score,running;
+
+function resize(){
+
+  W=canvas.width=window.innerWidth;
+  H=canvas.height=window.innerHeight;
+
+}
+
+resize();
+window.onresize=resize;
+
 
 function start(){
 
   document.getElementById("intro").style.display="none";
-  c.style.display="block";
+  canvas.style.display="block";
 
-  bird={x:60,y:250,v:0};
+  resize();
+
+  bird={
+    x:W*.18,
+    y:H*.4,
+    v:0
+  };
+
   score=0;
   running=true;
-
   pipes=[];
 
   for(let i=0;i<4;i++){
+
     pipes.push({
-      x:300+i*170,
-      gap:Math.random()*200+170,
+      x:W+120+i*W*.75,
+      gap:H*.45+Math.random()*H*.15,
       passed:false
     });
+
   }
 
   loop();
 }
 
+
+/* TAP / TOUCH */
+
 function flap(){
-  if(running) bird.v=-7;
+
+  if(running)
+    bird.v=-H*.012;
+
 }
 
-document.onkeydown=e=>{
-  if(e.code==="Space") flap();
-};
+canvas.addEventListener("touchstart",e=>{
+  e.preventDefault();
+  flap();
+});
 
-c.onclick=flap;
+canvas.addEventListener("click",flap);
+
+
+/* KEYBOARD FOR PC */
+
+document.addEventListener("keydown",e=>{
+  if(e.code==="Space")
+    flap();
+});
+
 
 function loop(){
 
-  ctx.clearRect(0,0,400,600);
+  if(!running)return;
 
-  /* Bird */
-  ctx.font="30px Arial";
+  ctx.clearRect(0,0,W,H);
+
+
+  /* BIRD */
+
+  ctx.font=Math.max(28,W*.08)+"px Arial";
   ctx.fillText("🐦",bird.x,bird.y);
 
-  /* Pipes */
+
+  /* PIPES */
+
   pipes.forEach(p=>{
 
-    p.x-=3;
+    p.x-=W*.007;
 
     ctx.fillStyle="#228B22";
 
     ctx.fillRect(
       p.x,
       0,
-      50,
-      p.gap-80
+      W*.12,
+      p.gap-H*.13
     );
 
     ctx.fillRect(
       p.x,
-      p.gap+80,
-      50,
-      600
+      p.gap+H*.13,
+      W*.12,
+      H
     );
 
-    if(!p.passed && p.x+50<bird.x){
+
+    /* SCORE */
+
+    if(!p.passed && p.x+W*.12<bird.x){
+
       p.passed=true;
       score++;
+
     }
+
+
+    /* COLLISION */
 
     if(
-      bird.x+25>p.x &&
-      bird.x<p.x+50 &&
+      bird.x+W*.07>p.x &&
+      bird.x<p.x+W*.12 &&
       (
-        bird.y<p.gap-80 ||
-        bird.y+20>p.gap+80
+        bird.y<p.gap-H*.13 ||
+        bird.y+H*.05>p.gap+H*.13
       )
     ){
+
       finish(false);
+
     }
+
   });
 
-  /* Gravity */
-  bird.v+=0.35;
+
+  /* GRAVITY */
+
+  bird.v+=H*.0006;
   bird.y+=bird.v;
 
-  if(bird.y<0 || bird.y>580){
+
+  /* GROUND / SKY */
+
+  if(
+    bird.y<0 ||
+    bird.y>H-H*.05
+  ){
+
     finish(false);
+
   }
 
-  /* Score */
-  ctx.fillStyle="white";
-  ctx.font="25px Arial";
-  ctx.fillText(score+"/4",15,35);
 
-  /* Finished */
+  /* SCORE */
+
+  ctx.fillStyle="white";
+  ctx.font="bold 25px Arial";
+  ctx.fillText(score+"/4",20,40);
+
+
+  /* SUCCESS */
+
   if(score>=4){
+
     finish(true);
     return;
+
   }
 
-  if(running)
-    requestAnimationFrame(loop);
+
+  requestAnimationFrame(loop);
+
 }
 
 
 function finish(success){
 
-  if(!running) return;
+  if(!running)return;
 
   running=false;
 
+
   /*
-    GREEN BACKGROUND
+  GREEN BACKGROUND
   */
+
   ctx.fillStyle="#228B22";
-  ctx.fillRect(0,0,400,600);
+  ctx.fillRect(0,0,W,H);
+
 
   /*
-    FADED DARK BACKGROUND
+  FADED BACKGROUND
   */
-  ctx.fillStyle="rgba(0,0,0,0.55)";
-  ctx.fillRect(0,0,400,600);
+
+  ctx.fillStyle="rgba(0,0,0,.55)";
+  ctx.fillRect(0,0,W,H);
+
 
   /*
-    MESSAGE
+  MESSAGE
   */
+
   ctx.textAlign="center";
   ctx.fillStyle="white";
 
-  ctx.font="30px Arial";
+  ctx.font="bold "+Math.min(30,W*.075)+"px Arial";
+
 
   if(success){
+
     ctx.fillText(
       "I LOVE YOU KIRANAKU ❤️",
-      200,
-      280
+      W/2,
+      H*.45
     );
+
   }else{
+
     ctx.fillText(
       "Please Try Again ❤️",
-      200,
-      280
+      W/2,
+      H*.45
     );
+
   }
+
 
   ctx.font="18px Arial";
 
   ctx.fillText(
-    "Click to restart",
-    200,
-    325
+    "Tap to restart",
+    W/2,
+    H*.53
   );
 
-  c.onclick=()=>{
+
+  /* RESTART */
+
+  canvas.onclick=()=>{
     location.reload();
   };
+
+  canvas.ontouchstart=()=>{
+    location.reload();
+  };
+
 }
+
 </script>
 
 </body>

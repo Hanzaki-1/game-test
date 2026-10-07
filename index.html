@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
+
 <meta name="viewport"
-      content="width=device-width,
-               initial-scale=1.0,
-               maximum-scale=1.0,
-               user-scalable=no">
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
 
 <title>Flappy Kiranaku ❤️</title>
 
 <style>
-
 *{
   box-sizing:border-box;
 }
 
 html,body{
   margin:0;
-  padding:0;
   width:100%;
   height:100%;
   overflow:hidden;
@@ -28,10 +26,7 @@ html,body{
   background:#70c5ce;
 }
 
-
-/* =========================
-   INTRO SCREEN
-========================= */
+/* INTRO */
 
 #intro{
   width:100%;
@@ -39,29 +34,25 @@ html,body{
 
   display:flex;
   flex-direction:column;
-
   justify-content:center;
   align-items:center;
 
   text-align:center;
-
-  background:#70c5ce;
 }
 
 #intro h1{
   font-size:30px;
-  margin-bottom:10px;
+  margin:0 0 10px;
 }
 
 #intro p{
   font-size:18px;
-  margin-bottom:25px;
+  margin:0 0 25px;
 }
 
 #startButton{
   padding:16px 35px;
-
-  border:none;
+  border:0;
   border-radius:12px;
 
   background:#ff4d6d;
@@ -71,42 +62,49 @@ html,body{
   font-weight:bold;
 }
 
-
-/* =========================
-   GAME
-========================= */
+/* GAME */
 
 #game{
   display:none;
 
   position:fixed;
-  left:0;
-  top:0;
+  inset:0;
 
   width:100%;
   height:100%;
-
-  background:#70c5ce;
 }
 
+/* SCORE */
 
-/* =========================
-   ENDING SCREEN
-========================= */
-
-#ending{
-
+#score{
   display:none;
 
   position:fixed;
-
+  top:15px;
   left:0;
-  top:0;
 
   width:100%;
-  height:100%;
 
-  z-index:10;
+  text-align:center;
+
+  color:white;
+  font-size:25px;
+  font-weight:bold;
+
+  z-index:5;
+
+  pointer-events:none;
+}
+
+/* END */
+
+#ending{
+  display:none;
+
+  position:fixed;
+  inset:0;
+
+  z-index:20;
 
   background:
     linear-gradient(
@@ -116,83 +114,39 @@ html,body{
     #228B22;
 
   flex-direction:column;
-
   justify-content:center;
   align-items:center;
 
   text-align:center;
-
-  padding:20px;
 }
 
-
-/* MAIN ENDING MESSAGE */
-
 #endingMessage{
-
   width:100%;
-
-  text-align:center;
 
   color:white;
 
   font-size:25px;
-
   font-weight:bold;
 
   line-height:1.5;
 
+  text-align:center;
 }
 
-
-/* RESTART */
-
 #restartText{
-
   margin-top:25px;
 
   color:white;
 
   font-size:16px;
-
 }
-
-
-/* SCORE */
-
-#score{
-
-  position:fixed;
-
-  top:15px;
-  left:0;
-
-  width:100%;
-
-  text-align:center;
-
-  color:white;
-
-  font-size:25px;
-
-  font-weight:bold;
-
-  z-index:5;
-
-  pointer-events:none;
-}
-
 </style>
-
 </head>
-
 
 <body>
 
 
-<!-- =========================
-     INTRO
-========================= -->
+<!-- INTRO -->
 
 <div id="intro">
 
@@ -207,9 +161,7 @@ html,body{
 </div>
 
 
-<!-- =========================
-     GAME
-========================= -->
+<!-- GAME -->
 
 <canvas id="game"></canvas>
 
@@ -218,9 +170,7 @@ html,body{
 </div>
 
 
-<!-- =========================
-     ENDING
-========================= -->
+<!-- ENDING -->
 
 <div id="ending">
 
@@ -236,34 +186,29 @@ html,body{
 <script>
 
 /* =========================
-   CANVAS
-========================= */
-
-const canvas =
-  document.getElementById("game");
-
-const ctx =
-  canvas.getContext("2d");
-
-
-/* =========================
    ELEMENTS
 ========================= */
 
+const canvas =
+document.getElementById("game");
+
+const ctx =
+canvas.getContext("2d");
+
 const intro =
-  document.getElementById("intro");
+document.getElementById("intro");
 
 const startButton =
-  document.getElementById("startButton");
+document.getElementById("startButton");
+
+const scoreElement =
+document.getElementById("score");
 
 const ending =
-  document.getElementById("ending");
+document.getElementById("ending");
 
 const endingMessage =
-  document.getElementById("endingMessage");
-
-const scoreText =
-  document.getElementById("score");
+document.getElementById("endingMessage");
 
 
 /* =========================
@@ -275,84 +220,78 @@ let H;
 
 let bird;
 
-let pipes = [];
+let pipes=[];
 
-let score = 0;
+let score=0;
 
-let running = false;
+let running=false;
 
 
 /* =========================
-   SCREEN SIZE
+   RESIZE
 ========================= */
 
 function resize(){
 
-  W = window.innerWidth;
-  H = window.innerHeight;
+  W=window.innerWidth;
+  H=window.innerHeight;
 
-  canvas.width = W;
-  canvas.height = H;
+  canvas.width=W;
+  canvas.height=H;
 
 }
 
-resize();
-
-window.addEventListener(
-  "resize",
-  resize
-);
-
 
 /* =========================
-   START GAME
+   START
 ========================= */
 
 function start(){
+
+  /* prevent double start */
+
+  if(running)return;
+
+  resize();
 
   intro.style.display="none";
 
   canvas.style.display="block";
 
+  scoreElement.style.display="block";
+
   ending.style.display="none";
 
-  resize();
 
+  /* bird */
 
-  bird = {
-
-    x: W * 0.18,
-
-    y: H * 0.40,
-
-    velocity: 0
-
+  bird={
+    x:W*0.18,
+    y:H*0.40,
+    velocity:0
   };
 
 
-  score = 0;
+  /* reset */
 
-  pipes = [];
+  score=0;
 
-  running = true;
+  scoreElement.innerText="0 / 4";
+
+  pipes=[];
 
 
-  scoreText.innerText="0 / 4";
-
-
-  /*
-    CREATE 4 PIPES
-  */
+  /* create only 4 pipes */
 
   for(let i=0;i<4;i++){
 
     pipes.push({
 
-      x: W + 100 + i * W * 0.75,
+      x:W+120+i*W*.75,
 
       gap:
-        H * 0.42 +
-        Math.random() * H * 0.18,
+        H*.42+
+        Math.random()*H*.16,
 
       passed:false
 
@@ -361,33 +300,40 @@ function start(){
   }
 
 
-  loop();
+  running=true;
+
+  requestAnimationFrame(loop);
 
 }
 
 
 /* =========================
-   BIRD FLAP
+   START BUTTON
 ========================= */
 
-function flap(event){
+startButton.addEventListener(
+  "click",
+  start
+);
 
-  if(event){
 
-    event.preventDefault();
+/* =========================
+   FLAP
+========================= */
 
-  }
+function flap(e){
+
+  if(e)e.preventDefault();
 
   if(!running)return;
 
-  bird.velocity =
-    -H * 0.012;
+  bird.velocity=-H*.012;
 
 }
 
 
 /* =========================
-   TOUCH
+   GAME TOUCH
 ========================= */
 
 canvas.addEventListener(
@@ -398,7 +344,7 @@ canvas.addEventListener(
 
 
 /* =========================
-   MOUSE
+   GAME CLICK
 ========================= */
 
 canvas.addEventListener(
@@ -413,11 +359,11 @@ canvas.addEventListener(
 
 document.addEventListener(
   "keydown",
-  function(event){
+  function(e){
 
-    if(event.code==="Space"){
+    if(e.code==="Space"){
 
-      flap(event);
+      flap(e);
 
     }
 
@@ -442,13 +388,11 @@ function loop(){
   );
 
 
-  /* =====================
-     BIRD
-  ===================== */
+  /* BIRD */
 
-  ctx.font =
-    Math.max(28,W*0.08)
-    + "px Arial";
+  ctx.font=
+    Math.max(28,W*.08)
+    +"px Arial";
 
   ctx.fillText(
     "🕊️",
@@ -457,137 +401,105 @@ function loop(){
   );
 
 
-  /* =====================
-     PIPES
-  ===================== */
+  /* PIPES */
 
-  pipes.forEach(function(pipe){
+  for(let i=0;i<pipes.length;i++){
 
-    pipe.x -= W * 0.007;
+    const p=pipes[i];
+
+    p.x-=W*.007;
 
 
-    /*
-      TOP PIPE
-    */
+    ctx.fillStyle="#228B22";
 
-    ctx.fillStyle =
-      "#228B22";
+
+    /* top */
 
     ctx.fillRect(
-
-      pipe.x,
-
+      p.x,
       0,
-
-      W * 0.12,
-
-      pipe.gap - H * 0.13
-
+      W*.12,
+      p.gap-H*.13
     );
 
 
-    /*
-      BOTTOM PIPE
-    */
+    /* bottom */
 
     ctx.fillRect(
-
-      pipe.x,
-
-      pipe.gap + H * 0.13,
-
-      W * 0.12,
-
+      p.x,
+      p.gap+H*.13,
+      W*.12,
       H
-
     );
 
 
-    /*
-      SCORE
-    */
+    /* score */
 
     if(
-      !pipe.passed &&
-      pipe.x + W*0.12 < bird.x
+      !p.passed &&
+      p.x+W*.12<bird.x
     ){
 
-      pipe.passed = true;
+      p.passed=true;
 
       score++;
 
-      scoreText.innerText =
-        score + " / 4";
+      scoreElement.innerText=
+        score+" / 4";
 
     }
 
 
-    /*
-      COLLISION
-    */
+    /* collision */
 
     if(
 
-      bird.x + W*0.07 > pipe.x &&
+      bird.x+W*.07>p.x &&
 
-      bird.x <
-      pipe.x + W*0.12 &&
+      bird.x<p.x+W*.12 &&
 
       (
+        bird.y<p.gap-H*.13 ||
 
-        bird.y <
-        pipe.gap - H*0.13
-
-        ||
-
-        bird.y + H*0.05 >
-        pipe.gap + H*0.13
-
+        bird.y+H*.05>
+        p.gap+H*.13
       )
 
     ){
 
       finish(false);
 
+      return;
+
     }
-
-  });
-
-
-  /* =====================
-     GRAVITY
-  ===================== */
-
-  bird.velocity +=
-    H * 0.0006;
-
-  bird.y +=
-    bird.velocity;
-
-
-  /* =====================
-     OUT OF SCREEN
-  ===================== */
-
-  if(
-
-    bird.y < 0 ||
-
-    bird.y >
-    H - H*0.05
-
-  ){
-
-    finish(false);
 
   }
 
 
-  /* =====================
-     WIN
-  ===================== */
+  /* gravity */
 
-  if(score >= 4){
+  bird.velocity+=H*.0006;
+
+  bird.y+=bird.velocity;
+
+
+  /* screen boundary */
+
+  if(
+    bird.y<0 ||
+    bird.y>H-H*.05
+  ){
+
+    finish(false);
+
+    return;
+
+  }
+
+
+  /* WIN */
+
+  if(score>=4){
 
     finish(true);
 
@@ -612,30 +524,21 @@ function finish(success){
   running=false;
 
 
-  /*
-    HIDE GAME
-  */
-
   canvas.style.display="none";
 
-  scoreText.style.display="none";
-
-
-  /*
-    SHOW ENDING
-  */
+  scoreElement.style.display="none";
 
   ending.style.display="flex";
 
 
   if(success){
 
-    endingMessage.innerHTML =
+    endingMessage.innerHTML=
       "I LOVE YOU<br>KIRANAKU ❤️";
 
   }else{
 
-    endingMessage.innerHTML =
+    endingMessage.innerHTML=
       "Please Try Again ❤️";
 
   }
@@ -647,60 +550,25 @@ function finish(success){
    RESTART
 ========================= */
 
-function restart(){
-
-  ending.style.display="none";
-
-  scoreText.style.display="block";
-
-  start();
-
-}
-
-
-/* =========================
-   ENDING CLICK
-========================= */
-
 ending.addEventListener(
   "click",
-  restart
-);
+  function(){
 
-
-ending.addEventListener(
-  "touchstart",
-  function(event){
-
-    event.preventDefault();
-
-    restart();
-
-  },
-  {passive:false}
-);
-
-
-/* =========================
-   START BUTTON
-========================= */
-
-startButton.addEventListener(
-  "click",
-  start
-);
-
-
-startButton.addEventListener(
-  "touchstart",
-  function(event){
-
-    event.preventDefault();
+    ending.style.display="none";
 
     start();
 
-  },
-  {passive:false}
+  }
+);
+
+
+/* =========================
+   RESIZE
+========================= */
+
+window.addEventListener(
+  "resize",
+  resize
 );
 
 </script>

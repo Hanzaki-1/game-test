@@ -1,44 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Flappy Kiranaku ❤️</title>
 
 <style>
 *{box-sizing:border-box}
 
-body{
+html,body{
   margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
   background:#70c5ce;
   font-family:Arial;
-  text-align:center;
-  overflow:hidden;
   touch-action:none;
 }
 
 #intro{
-  height:100vh;
+  width:100%;
+  height:100%;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
 }
 
-h1{font-size:30px}
-
-button{
-  padding:16px 40px;
-  font-size:20px;
-  border:0;
-  border-radius:12px;
-  background:#ff4d6d;
-  color:white;
-}
-
-canvas{
-  width:100vw;
-  height:100vh;
-  display:block;
+#game{
+  display:none;
+  width:100%;
+  height:100%;
 }
 </style>
 </head>
@@ -61,16 +52,24 @@ const ctx=canvas.getContext("2d");
 let W,H;
 let bird,pipes,score,running;
 
+
+/* SCREEN SIZE */
+
 function resize(){
 
-  W=canvas.width=window.innerWidth;
-  H=canvas.height=window.innerHeight;
+  W=window.innerWidth;
+  H=window.innerHeight;
+
+  canvas.width=W;
+  canvas.height=H;
 
 }
 
 resize();
-window.onresize=resize;
+window.addEventListener("resize",resize);
 
+
+/* START */
 
 function start(){
 
@@ -92,41 +91,40 @@ function start(){
   for(let i=0;i<4;i++){
 
     pipes.push({
-      x:W+120+i*W*.75,
-      gap:H*.45+Math.random()*H*.15,
+      x:W+100+i*W*.75,
+      gap:H*.45+Math.random()*H*.12,
       passed:false
     });
 
   }
 
+  canvas.onclick=flap;
+  canvas.ontouchstart=flap;
+
   loop();
 }
 
 
-/* TAP / TOUCH */
+/* FLAP */
 
-function flap(){
+function flap(e){
+
+  if(e)e.preventDefault();
 
   if(running)
     bird.v=-H*.012;
 
 }
 
-canvas.addEventListener("touchstart",e=>{
-  e.preventDefault();
-  flap();
-});
 
-canvas.addEventListener("click",flap);
-
-
-/* KEYBOARD FOR PC */
+/* KEYBOARD */
 
 document.addEventListener("keydown",e=>{
-  if(e.code==="Space")
-    flap();
+  if(e.code==="Space")flap();
 });
 
+
+/* GAME */
 
 function loop(){
 
@@ -164,8 +162,6 @@ function loop(){
     );
 
 
-    /* SCORE */
-
     if(!p.passed && p.x+W*.12<bird.x){
 
       p.passed=true;
@@ -198,12 +194,7 @@ function loop(){
   bird.y+=bird.v;
 
 
-  /* GROUND / SKY */
-
-  if(
-    bird.y<0 ||
-    bird.y>H-H*.05
-  ){
+  if(bird.y<0 || bird.y>H-H*.05){
 
     finish(false);
 
@@ -214,10 +205,11 @@ function loop(){
 
   ctx.fillStyle="white";
   ctx.font="bold 25px Arial";
+  ctx.textAlign="left";
   ctx.fillText(score+"/4",20,40);
 
 
-  /* SUCCESS */
+  /* FINISH */
 
   if(score>=4){
 
@@ -226,18 +218,17 @@ function loop(){
 
   }
 
-
   requestAnimationFrame(loop);
-
 }
 
+
+/* END SCREEN */
 
 function finish(success){
 
   if(!running)return;
 
   running=false;
-
 
   /*
   GREEN BACKGROUND
@@ -248,7 +239,7 @@ function finish(success){
 
 
   /*
-  FADED BACKGROUND
+  DARK FADE
   */
 
   ctx.fillStyle="rgba(0,0,0,.55)";
@@ -256,52 +247,67 @@ function finish(success){
 
 
   /*
-  MESSAGE
+  CENTER EVERYTHING
   */
 
   ctx.textAlign="center";
+  ctx.textBaseline="middle";
+
+
+  /* MAIN MESSAGE */
+
+  let message=success
+    ? "I LOVE YOU KIRANAKU ❤️"
+    : "Please Try Again ❤️";
+
+
+  let fontSize=Math.min(W*.075,32);
+
+  ctx.font="bold "+fontSize+"px Arial";
   ctx.fillStyle="white";
 
-  ctx.font="bold "+Math.min(30,W*.075)+"px Arial";
+  /*
+  EXACT CENTER
+  */
+
+  ctx.fillText(
+    message,
+    W/2,
+    H/2-20
+  );
 
 
-  if(success){
-
-    ctx.fillText(
-      "I LOVE YOU KIRANAKU ❤️",
-      W/2,
-      H*.45
-    );
-
-  }else{
-
-    ctx.fillText(
-      "Please Try Again ❤️",
-      W/2,
-      H*.45
-    );
-
-  }
-
+  /* RESTART TEXT */
 
   ctx.font="18px Arial";
 
   ctx.fillText(
     "Tap to restart",
     W/2,
-    H*.53
+    H/2+30
   );
 
 
-  /* RESTART */
+  /*
+  RESTART
+  */
 
-  canvas.onclick=()=>{
-    location.reload();
-  };
+  canvas.onclick=restart;
+  canvas.ontouchstart=restart;
 
-  canvas.ontouchstart=()=>{
-    location.reload();
-  };
+}
+
+
+/* RESTART */
+
+function restart(e){
+
+  if(e)e.preventDefault();
+
+  canvas.onclick=null;
+  canvas.ontouchstart=null;
+
+  start();
 
 }
 

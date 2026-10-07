@@ -26,6 +26,15 @@ html,body{
   align-items:center;
 }
 
+button{
+  padding:15px 35px;
+  border:0;
+  border-radius:12px;
+  background:#ff4d6d;
+  color:white;
+  font-size:20px;
+}
+
 #game{
   display:none;
   width:100%;
@@ -49,11 +58,10 @@ html,body{
 const canvas=document.getElementById("game");
 const ctx=canvas.getContext("2d");
 
-let W,H;
-let bird,pipes,score,running;
+let W,H,bird,pipes,score,running;
 
 
-/* SCREEN SIZE */
+/* SCREEN */
 
 function resize(){
 
@@ -66,7 +74,6 @@ function resize(){
 }
 
 resize();
-window.addEventListener("resize",resize);
 
 
 /* START */
@@ -120,7 +127,7 @@ function flap(e){
 /* KEYBOARD */
 
 document.addEventListener("keydown",e=>{
-  if(e.code==="Space")flap();
+  if(e.code==="Space") flap();
 });
 
 
@@ -204,12 +211,12 @@ function loop(){
   /* SCORE */
 
   ctx.fillStyle="white";
-  ctx.font="bold 25px Arial";
   ctx.textAlign="left";
+  ctx.font="bold 24px Arial";
   ctx.fillText(score+"/4",20,40);
 
 
-  /* FINISH */
+  /* WIN */
 
   if(score>=4){
 
@@ -222,7 +229,7 @@ function loop(){
 }
 
 
-/* END SCREEN */
+/* END */
 
 function finish(success){
 
@@ -230,67 +237,72 @@ function finish(success){
 
   running=false;
 
-  /*
-  GREEN BACKGROUND
-  */
+
+  /* GREEN */
 
   ctx.fillStyle="#228B22";
   ctx.fillRect(0,0,W,H);
 
 
-  /*
-  DARK FADE
-  */
+  /* DARK FADE */
 
   ctx.fillStyle="rgba(0,0,0,.55)";
   ctx.fillRect(0,0,W,H);
 
 
   /*
-  CENTER EVERYTHING
+    CENTER TEXT
   */
 
   ctx.textAlign="center";
   ctx.textBaseline="middle";
-
-
-  /* MAIN MESSAGE */
-
-  let message=success
-    ? "I LOVE YOU KIRANAKU ❤️"
-    : "Please Try Again ❤️";
-
-
-  let fontSize=Math.min(W*.075,32);
-
-  ctx.font="bold "+fontSize+"px Arial";
   ctx.fillStyle="white";
 
-  /*
-  EXACT CENTER
-  */
 
-  ctx.fillText(
-    message,
-    W/2,
-    H/2-20
-  );
+  /* SMALL PHONE-SAFE SIZE */
+
+  let size=Math.min(24,W*.055);
+
+  ctx.font="bold "+size+"px Arial";
 
 
-  /* RESTART TEXT */
+  if(success){
 
-  ctx.font="18px Arial";
+    /* TWO LINES */
+
+    ctx.fillText(
+      "I LOVE YOU",
+      W/2,
+      H/2-25
+    );
+
+    ctx.fillText(
+      "KIRANAKU ❤️",
+      W/2,
+      H/2+10
+    );
+
+  }else{
+
+    ctx.fillText(
+      "Please Try Again ❤️",
+      W/2,
+      H/2-10
+    );
+
+  }
+
+
+  /* RESTART */
+
+  ctx.font="16px Arial";
 
   ctx.fillText(
     "Tap to restart",
     W/2,
-    H/2+30
+    H/2+55
   );
 
-
-  /*
-  RESTART
-  */
 
   canvas.onclick=restart;
   canvas.ontouchstart=restart;

@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +5,7 @@
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<title>Classic Tetris</title>
+<title>NES Tetris</title>
 
 <style>
 * {
@@ -14,49 +13,37 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
-    margin: 0;
-    width: 100%;
-    min-height: 100%;
-}
-
 body {
+    margin: 0;
+    min-height: 100vh;
     background: #101050;
     color: white;
     font-family: "Courier New", monospace;
     display: flex;
     justify-content: center;
-    overflow-x: hidden;
 }
 
 .game {
     width: 100%;
     max-width: 480px;
-    padding: 12px;
+    padding: 10px;
 }
-
-/* HEADER */
 
 .title {
     text-align: center;
     font-size: 34px;
     font-weight: bold;
     letter-spacing: 5px;
-    margin: 5px 0 14px;
-    color: #ffffff;
+    margin: 5px 0 12px;
     text-shadow: 3px 3px #000;
 }
-
-/* GAME AREA */
 
 .game-area {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    gap: 14px;
+    gap: 12px;
 }
-
-/* BOARD */
 
 .board-wrap {
     background: #000;
@@ -72,70 +59,56 @@ body {
     image-rendering: pixelated;
 }
 
-/* SIDE PANEL */
-
 .side {
     width: 105px;
-    text-align: left;
 }
 
 .panel {
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .label {
     color: #aaaaff;
     font-size: 12px;
     font-weight: bold;
-    margin-bottom: 3px;
 }
 
 .value {
+    color: white;
     font-size: 20px;
     font-weight: bold;
-    color: white;
     text-shadow: 2px 2px #000;
 }
 
-/* NEXT */
-
 .next-box {
+    width: 92px;
+    height: 92px;
     margin-top: 5px;
     background: #000;
     border: 3px solid #666;
-    width: 92px;
-    height: 92px;
 }
 
 #next {
+    display: block;
     width: 86px;
     height: 86px;
-    display: block;
 }
-
-/* START */
 
 #start {
     display: block;
     margin: 15px auto 10px;
-    padding: 11px 28px;
-    border: 3px solid #aaa;
+    padding: 11px 30px;
     background: #222;
     color: white;
+    border: 3px solid #aaa;
     font-family: "Courier New", monospace;
     font-weight: bold;
     font-size: 16px;
 }
 
-#start:active {
-    background: #555;
-}
-
-/* CONTROLS */
-
 .controls {
     width: min(95vw, 340px);
-    margin: 12px auto 0;
+    margin: 10px auto;
 }
 
 .control-row {
@@ -148,9 +121,9 @@ body {
 .control {
     width: 72px;
     height: 55px;
-    border: 3px solid #777;
     background: #222;
     color: white;
+    border: 3px solid #777;
     font-family: "Courier New", monospace;
     font-size: 25px;
     font-weight: bold;
@@ -166,8 +139,6 @@ body {
     font-size: 16px;
 }
 
-/* GAME OVER */
-
 .message {
     position: fixed;
     inset: 0;
@@ -179,7 +150,7 @@ body {
 
 .message-box {
     width: 285px;
-    padding: 24px;
+    padding: 25px;
     text-align: center;
     background: #101050;
     border: 5px solid white;
@@ -187,16 +158,11 @@ body {
 }
 
 .message-box h2 {
-    margin: 0 0 12px;
-    font-size: 25px;
-}
-
-.message-box p {
-    font-size: 16px;
+    margin-top: 0;
 }
 
 .message-box button {
-    padding: 10px 20px;
+    padding: 10px 22px;
     background: #222;
     color: white;
     border: 3px solid #aaa;
@@ -204,13 +170,7 @@ body {
     font-weight: bold;
 }
 
-/* MOBILE */
-
-@media (max-width: 390px) {
-
-    .game {
-        padding: 7px;
-    }
+@media(max-width:390px) {
 
     .title {
         font-size: 27px;
@@ -241,7 +201,6 @@ body {
     .label {
         font-size: 10px;
     }
-
 }
 </style>
 </head>
@@ -285,38 +244,27 @@ body {
                             width="86"
                             height="86"></canvas>
                 </div>
-
             </div>
 
         </div>
-
     </div>
 
-    <button id="start">
-        START
-    </button>
+    <button id="start">START</button>
 
     <div class="controls">
 
         <div class="control-row">
-            <button class="control"
-                    id="rotate">↻</button>
+            <button class="control" id="rotate">↻</button>
         </div>
 
         <div class="control-row">
-            <button class="control"
-                    id="left">←</button>
-
-            <button class="control"
-                    id="down">↓</button>
-
-            <button class="control"
-                    id="right">→</button>
+            <button class="control" id="left">←</button>
+            <button class="control" id="down">↓</button>
+            <button class="control" id="right">→</button>
         </div>
 
         <div class="control-row">
-            <button class="control drop"
-                    id="drop">DROP</button>
+            <button class="control drop" id="drop">DROP</button>
         </div>
 
     </div>
@@ -335,9 +283,7 @@ body {
             <span id="finalScore">0</span>
         </p>
 
-        <button id="restart">
-            TRY AGAIN
-        </button>
+        <button id="restart">TRY AGAIN</button>
 
     </div>
 
@@ -346,55 +292,52 @@ body {
 
 <script>
 
-/* =========================================================
-   NES STYLE TETRIS
-   ========================================================= */
+/* =====================================================
+   CANVAS
+   ===================================================== */
 
-const canvas =
-    document.getElementById("game");
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-const ctx =
-    canvas.getContext("2d");
-
-const nextCanvas =
-    document.getElementById("next");
-
-const nextCtx =
-    nextCanvas.getContext("2d");
+const nextCanvas = document.getElementById("next");
+const nextCtx = nextCanvas.getContext("2d");
 
 
-/* BOARD */
+/* =====================================================
+   BOARD SETTINGS
+   ===================================================== */
 
 const COLS = 10;
 const ROWS = 20;
+
 const BLOCK = 30;
 
-ctx.scale(BLOCK, BLOCK);
 
-
-/* =========================================================
-   NES-STYLE COLORS
-   ========================================================= */
+/* =====================================================
+   COLORS
+   ===================================================== */
 
 const colors = [
 
     null,
 
-    "#00E8E8", // I CYAN
-    "#F8E800", // O YELLOW
-    "#B000D8", // T PURPLE
-    "#00C840", // S GREEN
-    "#E82020", // Z RED
-    "#2858E8", // J BLUE
-    "#F07800"  // L ORANGE
+    "#00E8E8", // I
+    "#F8E800", // O
+    "#B000D8", // T
+    "#00C840", // S
+    "#E82020", // Z
+    "#2858E8", // J
+    "#F07800"  // L
 
 ];
 
 
-/* PIECES */
-
 const pieces = "IOTSZJL";
 
+
+/* =====================================================
+   GAME VARIABLES
+   ===================================================== */
 
 let board;
 let player;
@@ -412,9 +355,9 @@ let lastTime = 0;
 let running = false;
 
 
-/* =========================================================
-   CREATE BOARD
-   ========================================================= */
+/* =====================================================
+   BOARD
+   ===================================================== */
 
 function createBoard() {
 
@@ -426,88 +369,70 @@ function createBoard() {
 }
 
 
-/* =========================================================
-   CREATE TETROMINO
-   ========================================================= */
+/* =====================================================
+   PIECES
+   ===================================================== */
 
 function createPiece(type) {
 
-    if (type === "I") {
+    switch(type) {
 
-        return [
-            [0,0,0,0],
-            [1,1,1,1],
-            [0,0,0,0],
-            [0,0,0,0]
-        ];
+        case "I":
+            return [
+                [0,0,0,0],
+                [1,1,1,1],
+                [0,0,0,0],
+                [0,0,0,0]
+            ];
 
-    }
+        case "O":
+            return [
+                [2,2],
+                [2,2]
+            ];
 
-    if (type === "O") {
+        case "T":
+            return [
+                [0,3,0],
+                [3,3,3],
+                [0,0,0]
+            ];
 
-        return [
-            [2,2],
-            [2,2]
-        ];
+        case "S":
+            return [
+                [0,4,4],
+                [4,4,0],
+                [0,0,0]
+            ];
 
-    }
+        case "Z":
+            return [
+                [5,5,0],
+                [0,5,5],
+                [0,0,0]
+            ];
 
-    if (type === "T") {
+        case "J":
+            return [
+                [6,0,0],
+                [6,6,6],
+                [0,0,0]
+            ];
 
-        return [
-            [0,3,0],
-            [3,3,3],
-            [0,0,0]
-        ];
-
-    }
-
-    if (type === "S") {
-
-        return [
-            [0,4,4],
-            [4,4,0],
-            [0,0,0]
-        ];
-
-    }
-
-    if (type === "Z") {
-
-        return [
-            [5,5,0],
-            [0,5,5],
-            [0,0,0]
-        ];
-
-    }
-
-    if (type === "J") {
-
-        return [
-            [6,0,0],
-            [6,6,6],
-            [0,0,0]
-        ];
-
-    }
-
-    if (type === "L") {
-
-        return [
-            [0,0,7],
-            [7,7,7],
-            [0,0,0]
-        ];
-
+        case "L":
+            return [
+                [0,0,7],
+                [7,7,7],
+                [0,0,0]
+            ];
     }
 
 }
 
 
-/* =========================================================
+/* =====================================================
    RANDOM PIECE
-   ========================================================= */
+   ===================================================== */
 
 function randomPiece() {
 
@@ -519,106 +444,105 @@ function randomPiece() {
         ];
 
     return createPiece(type);
-
 }
 
 
-/* =========================================================
-   DRAW BLOCK
-   ========================================================= */
+/* =====================================================
+   DRAW ONE BLOCK
+   ===================================================== */
 
 function drawBlock(
     context,
-    x,
-    y,
+    gridX,
+    gridY,
     value,
     size
 ) {
 
-    const px = x * size;
-    const py = y * size;
+    const x = gridX * size;
+    const y = gridY * size;
 
-    /* main block */
 
-    context.fillStyle =
-        colors[value];
+    /* MAIN COLOR */
+
+    context.fillStyle = colors[value];
 
     context.fillRect(
-        px,
-        py,
+        x,
+        y,
         size,
         size
     );
 
 
     /*
-       PIXEL-STYLE HIGHLIGHT
-       Makes each block look chunky
+       NES-STYLE PIXEL HIGHLIGHT
     */
 
-    context.fillStyle =
-        "rgba(255,255,255,.35)";
+    context.fillStyle = "rgba(255,255,255,0.35)";
 
     context.fillRect(
-        px,
-        py,
-        size,
-        Math.max(3, size * .12)
+        x + 2,
+        y + 2,
+        size - 4,
+        4
     );
 
     context.fillRect(
-        px,
-        py,
-        Math.max(3, size * .12),
-        size
+        x + 2,
+        y + 2,
+        4,
+        size - 4
     );
 
 
-    /* DARK PIXEL EDGE */
+    /*
+       DARK LOWER EDGE
+    */
 
-    context.fillStyle =
-        "rgba(0,0,0,.35)";
+    context.fillStyle = "rgba(0,0,0,0.35)";
 
     context.fillRect(
-        px,
-        py + size - Math.max(3, size * .12),
-        size,
-        Math.max(3, size * .12)
+        x + 2,
+        y + size - 6,
+        size - 4,
+        4
     );
 
     context.fillRect(
-        px + size - Math.max(3, size * .12),
-        py,
-        Math.max(3, size * .12),
-        size
+        x + size - 6,
+        y + 2,
+        4,
+        size - 4
     );
 
 
-    /* BLACK SEPARATION */
+    /*
+       BLACK PIXEL BORDER
+    */
 
     context.strokeStyle = "#000";
-
-    context.lineWidth = 1;
+    context.lineWidth = 2;
 
     context.strokeRect(
-        px + .5,
-        py + .5,
-        size - 1,
-        size - 1
+        x + 1,
+        y + 1,
+        size - 2,
+        size - 2
     );
 
 }
 
 
-/* =========================================================
+/* =====================================================
    DRAW MATRIX
-   ========================================================= */
+   ===================================================== */
 
 function drawMatrix(
     matrix,
     offset,
-    context = ctx,
-    size = BLOCK
+    context,
+    size
 ) {
 
     matrix.forEach(
@@ -627,7 +551,7 @@ function drawMatrix(
             row.forEach(
                 (value, x) => {
 
-                    if (value !== 0) {
+                    if(value !== 0) {
 
                         drawBlock(
                             context,
@@ -648,36 +572,50 @@ function drawMatrix(
 }
 
 
-/* =========================================================
-   DRAW BOARD
-   ========================================================= */
+/* =====================================================
+   DRAW GAME BOARD
+   ===================================================== */
 
 function draw() {
+
+    /*
+       IMPORTANT:
+       We DO NOT scale the canvas context.
+       Everything is drawn using real pixels.
+    */
 
     ctx.fillStyle = "#000";
 
     ctx.fillRect(
         0,
         0,
-        COLS,
-        ROWS
+        canvas.width,
+        canvas.height
     );
 
+
+    /* Already placed blocks */
 
     drawMatrix(
         board,
         {
             x: 0,
             y: 0
-        }
+        },
+        ctx,
+        BLOCK
     );
 
 
-    if (running) {
+    /* Falling piece */
+
+    if(running) {
 
         drawMatrix(
             player.matrix,
-            player.pos
+            player.pos,
+            ctx,
+            BLOCK
         );
 
     }
@@ -685,9 +623,9 @@ function draw() {
 }
 
 
-/* =========================================================
+/* =====================================================
    NEXT PIECE
-   ========================================================= */
+   ===================================================== */
 
 function drawNext() {
 
@@ -701,7 +639,7 @@ function drawNext() {
     );
 
 
-    if (!nextPiece) return;
+    if(!nextPiece) return;
 
 
     const size = 20;
@@ -732,40 +670,35 @@ function drawNext() {
 }
 
 
-/* =========================================================
+/* =====================================================
    COLLISION
-   ========================================================= */
+   ===================================================== */
 
-function collide(
-    board,
-    player
-) {
+function collide(board, player) {
 
-    const matrix =
-        player.matrix;
-
-    const pos =
-        player.pos;
+    const matrix = player.matrix;
+    const pos = player.pos;
 
 
-    for (
-        let y = 0;
-        y < matrix.length;
-        y++
-    ) {
+    for(let y = 0; y < matrix.length; y++) {
 
-        for (
-            let x = 0;
-            x < matrix[y].length;
-            x++
-        ) {
+        for(let x = 0; x < matrix[y].length; x++) {
 
-            if (
-                matrix[y][x] !== 0 &&
-                (
-                    board[y + pos.y] &&
-                    board[y + pos.y][x + pos.x]
-                ) !== 0
+            if(matrix[y][x] === 0) {
+                continue;
+            }
+
+
+            const newX = x + pos.x;
+            const newY = y + pos.y;
+
+
+            /* LEFT / RIGHT / BOTTOM */
+
+            if(
+                newX < 0 ||
+                newX >= COLS ||
+                newY >= ROWS
             ) {
 
                 return true;
@@ -773,13 +706,11 @@ function collide(
             }
 
 
-            if (
-                matrix[y][x] !== 0 &&
-                (
-                    x + pos.x < 0 ||
-                    x + pos.x >= COLS ||
-                    y + pos.y >= ROWS
-                )
+            /* EXISTING BLOCK */
+
+            if(
+                newY >= 0 &&
+                board[newY][newX] !== 0
             ) {
 
                 return true;
@@ -795,14 +726,11 @@ function collide(
 }
 
 
-/* =========================================================
+/* =====================================================
    MERGE
-   ========================================================= */
+   ===================================================== */
 
-function merge(
-    board,
-    player
-) {
+function merge(board, player) {
 
     player.matrix.forEach(
         (row, y) => {
@@ -810,7 +738,7 @@ function merge(
             row.forEach(
                 (value, x) => {
 
-                    if (value !== 0) {
+                    if(value !== 0) {
 
                         board[
                             y + player.pos.y
@@ -829,17 +757,15 @@ function merge(
 }
 
 
-/* =========================================================
+/* =====================================================
    RESET PLAYER
-   ========================================================= */
+   ===================================================== */
 
 function resetPlayer() {
 
-    player.matrix =
-        nextPiece || randomPiece();
+    player.matrix = nextPiece;
 
-    nextPiece =
-        randomPiece();
+    nextPiece = randomPiece();
 
 
     player.pos.y = 0;
@@ -854,7 +780,7 @@ function resetPlayer() {
     drawNext();
 
 
-    if (
+    if(
         collide(
             board,
             player
@@ -868,19 +794,19 @@ function resetPlayer() {
 }
 
 
-/* =========================================================
+/* =====================================================
    MOVE
-   ========================================================= */
+   ===================================================== */
 
 function playerMove(direction) {
 
-    if (!running) return;
+    if(!running) return;
 
 
     player.pos.x += direction;
 
 
-    if (
+    if(
         collide(
             board,
             player
@@ -897,19 +823,19 @@ function playerMove(direction) {
 }
 
 
-/* =========================================================
-   DROP
-   ========================================================= */
+/* =====================================================
+   DROP ONE ROW
+   ===================================================== */
 
 function playerDrop() {
 
-    if (!running) return;
+    if(!running) return;
 
 
     player.pos.y++;
 
 
-    if (
+    if(
         collide(
             board,
             player
@@ -937,16 +863,16 @@ function playerDrop() {
 }
 
 
-/* =========================================================
+/* =====================================================
    HARD DROP
-   ========================================================= */
+   ===================================================== */
 
 function hardDrop() {
 
-    if (!running) return;
+    if(!running) return;
 
 
-    while (
+    while(
         !collide(
             board,
             player
@@ -978,22 +904,19 @@ function hardDrop() {
 }
 
 
-/* =========================================================
-   ROTATE
-   ========================================================= */
+/* =====================================================
+   ROTATION
+   ===================================================== */
 
-function rotate(
-    matrix,
-    direction
-) {
+function rotate(matrix, direction) {
 
-    for (
+    for(
         let y = 0;
         y < matrix.length;
         y++
     ) {
 
-        for (
+        for(
             let x = 0;
             x < y;
             x++
@@ -1013,7 +936,7 @@ function rotate(
     }
 
 
-    if (direction > 0) {
+    if(direction > 0) {
 
         matrix.forEach(
             row => row.reverse()
@@ -1028,13 +951,13 @@ function rotate(
 }
 
 
-/* =========================================================
+/* =====================================================
    PLAYER ROTATE
-   ========================================================= */
+   ===================================================== */
 
 function playerRotate(direction) {
 
-    if (!running) return;
+    if(!running) return;
 
 
     const originalX =
@@ -1050,7 +973,7 @@ function playerRotate(direction) {
     );
 
 
-    while (
+    while(
         collide(
             board,
             player
@@ -1065,7 +988,7 @@ function playerRotate(direction) {
             (offset > 0 ? 1 : -1));
 
 
-        if (
+        if(
             offset >
             player.matrix[0].length
         ) {
@@ -1079,6 +1002,7 @@ function playerRotate(direction) {
             player.pos.x =
                 originalX;
 
+
             return;
 
         }
@@ -1091,9 +1015,9 @@ function playerRotate(direction) {
 }
 
 
-/* =========================================================
-   LINE CLEARING
-   ========================================================= */
+/* =====================================================
+   CLEAR LINES
+   ===================================================== */
 
 function arenaSweep() {
 
@@ -1102,19 +1026,19 @@ function arenaSweep() {
 
     outer:
 
-    for (
-        let y = board.length - 1;
+    for(
+        let y = ROWS - 1;
         y >= 0;
         y--
     ) {
 
-        for (
+        for(
             let x = 0;
-            x < board[y].length;
+            x < COLS;
             x++
         ) {
 
-            if (
+            if(
                 board[y][x] === 0
             ) {
 
@@ -1136,7 +1060,7 @@ function arenaSweep() {
         );
 
 
-        y--;
+        y++;
 
 
         lines++;
@@ -1170,58 +1094,50 @@ function arenaSweep() {
 }
 
 
-/* =========================================================
-   SCORE DISPLAY
-   ========================================================= */
+/* =====================================================
+   SCORE
+   ===================================================== */
 
 function updateScore() {
 
-    document.getElementById(
-        "score"
-    ).textContent =
-        String(score)
-        .padStart(6, "0");
+    document.getElementById("score")
+        .textContent =
+        String(score).padStart(6, "0");
 
 
-    document.getElementById(
-        "lines"
-    ).textContent =
-        String(lines)
-        .padStart(3, "0");
+    document.getElementById("lines")
+        .textContent =
+        String(lines).padStart(3, "0");
 
 
-    document.getElementById(
-        "level"
-    ).textContent =
-        String(level)
-        .padStart(2, "0");
+    document.getElementById("level")
+        .textContent =
+        String(level).padStart(2, "0");
 
 }
 
 
-/* =========================================================
+/* =====================================================
    GAME LOOP
-   ========================================================= */
+   ===================================================== */
 
-function update(
-    time = 0
-) {
+function update(time = 0) {
 
-    if (!running) return;
+    if(!running) return;
 
 
-    const delta =
+    const deltaTime =
         time - lastTime;
 
 
     lastTime = time;
 
 
-    dropCounter += delta;
+    dropCounter += deltaTime;
 
 
-    if (
-        dropCounter >
+    if(
+        dropCounter >=
         dropInterval
     ) {
 
@@ -1233,27 +1149,22 @@ function update(
     draw();
 
 
-    requestAnimationFrame(
-        update
-    );
+    requestAnimationFrame(update);
 
 }
 
 
-/* =========================================================
+/* =====================================================
    START
-   ========================================================= */
+   ===================================================== */
 
 function startGame() {
 
-    board =
-        createBoard();
+    board = createBoard();
 
 
     score = 0;
-
     lines = 0;
-
     level = 1;
 
 
@@ -1296,16 +1207,17 @@ function startGame() {
         performance.now();
 
 
-    requestAnimationFrame(
-        update
-    );
+    requestAnimationFrame(update);
+
+
+    draw();
 
 }
 
 
-/* =========================================================
+/* =====================================================
    GAME OVER
-   ========================================================= */
+   ===================================================== */
 
 function endGame() {
 
@@ -1326,21 +1238,18 @@ function endGame() {
 }
 
 
-/* =========================================================
+/* =====================================================
    KEYBOARD
-   ========================================================= */
+   ===================================================== */
 
 document.addEventListener(
     "keydown",
     event => {
 
-        if (!running) return;
+        if(!running) return;
 
 
-        if (
-            event.key ===
-            "ArrowLeft"
-        ) {
+        if(event.key === "ArrowLeft") {
 
             event.preventDefault();
 
@@ -1349,10 +1258,7 @@ document.addEventListener(
         }
 
 
-        else if (
-            event.key ===
-            "ArrowRight"
-        ) {
+        else if(event.key === "ArrowRight") {
 
             event.preventDefault();
 
@@ -1361,10 +1267,7 @@ document.addEventListener(
         }
 
 
-        else if (
-            event.key ===
-            "ArrowDown"
-        ) {
+        else if(event.key === "ArrowDown") {
 
             event.preventDefault();
 
@@ -1373,10 +1276,7 @@ document.addEventListener(
         }
 
 
-        else if (
-            event.key ===
-            "ArrowUp"
-        ) {
+        else if(event.key === "ArrowUp") {
 
             event.preventDefault();
 
@@ -1385,10 +1285,7 @@ document.addEventListener(
         }
 
 
-        else if (
-            event.code ===
-            "Space"
-        ) {
+        else if(event.code === "Space") {
 
             event.preventDefault();
 
@@ -1400,14 +1297,11 @@ document.addEventListener(
 );
 
 
-/* =========================================================
+/* =====================================================
    MOBILE BUTTONS
-   ========================================================= */
+   ===================================================== */
 
-function button(
-    id,
-    action
-) {
+function setupButton(id, action) {
 
     const element =
         document.getElementById(id);
@@ -1436,60 +1330,59 @@ function button(
 }
 
 
-button(
+setupButton(
     "left",
     () => playerMove(-1)
 );
 
 
-button(
+setupButton(
     "right",
     () => playerMove(1)
 );
 
 
-button(
+setupButton(
     "down",
     () => playerDrop()
 );
 
 
-button(
+setupButton(
     "rotate",
     () => playerRotate(1)
 );
 
 
-button(
+setupButton(
     "drop",
     () => hardDrop()
 );
 
 
-/* =========================================================
-   START BUTTON
-   ========================================================= */
+/* =====================================================
+   START / RESTART
+   ===================================================== */
 
-document.getElementById(
-    "start"
-).addEventListener(
-    "click",
-    startGame
-);
-
-
-document.getElementById(
-    "restart"
-).addEventListener(
-    "click",
-    startGame
-);
+document.getElementById("start")
+    .addEventListener(
+        "click",
+        startGame
+    );
 
 
-/* INITIAL SCREEN */
+document.getElementById("restart")
+    .addEventListener(
+        "click",
+        startGame
+    );
 
-board =
-    createBoard();
+
+/* =====================================================
+   INITIAL SCREEN
+   ===================================================== */
+
+board = createBoard();
 
 
 player = {
@@ -1499,7 +1392,7 @@ player = {
         y: 0
     },
 
-    matrix: randomPiece()
+    matrix: createPiece("T")
 
 };
 
